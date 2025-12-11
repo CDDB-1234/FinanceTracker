@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import Deposits from './pages/Deposits';
+import Snapshots from './pages/Snapshots';
 import './App.css';
 
 function App() {
@@ -19,6 +20,10 @@ function App() {
         <Route 
           path="/deposits" 
           element={isAuthenticated ? <Deposits /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/snapshots" 
+          element={isAuthenticated ? <Snapshots /> : <Navigate to="/login" />} 
         />
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
       </Routes>

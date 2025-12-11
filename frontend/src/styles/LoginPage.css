@@ -92,6 +92,36 @@
   cursor: not-allowed;
 }
 
+.role-select {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background-color: white;
+  cursor: pointer;
+}
+
+.role-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.role-select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.role-hint {
+  display: block;
+  margin-top: 6px;
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
 .submit-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;

@@ -109,10 +109,17 @@ The frontend will run on `http://localhost:3000`
 
 ### Current Features
 - **User Registration**: Create a new account with email and password
+  - Choose role: Admin or Normal User during registration
+  - Admins can delete records across the application
+  - Normal users cannot access delete functionality
 - **User Login**: Authenticate with email and password
 - **JWT Authentication**: Secure token-based authentication
 - **Protected Routes**: Dashboard only accessible to authenticated users
+- **Role-Based Access Control**: Admin-only delete operations
 - **Logout**: Clear session and return to login
+- **Deposit Management**: Add, edit, view, and (for admins) delete deposits
+- **Portfolio Snapshots**: Capture financial portfolio status
+- **Excel Export**: Download deposits and snapshots data as Excel workbook
 
 ### Planned Features
 - Transaction management (add, edit, delete transactions)
@@ -126,16 +133,17 @@ The frontend will run on `http://localhost:3000`
 
 ### Authentication
 - `POST /api/auth/register` - Register a new user
-  - Request: `{ name, email, password }`
-  - Response: `{ token, user }`
+  - Request: `{ name, email, password, role }`
+  - Response: `{ token, user }` (role is 'normal' or 'admin')
+  - Note: Role is optional and defaults to 'normal'
 
 - `POST /api/auth/login` - Login user
   - Request: `{ email, password }`
-  - Response: `{ token, user }`
+  - Response: `{ token, user }` (includes user role)
 
 - `GET /api/auth/verify` - Verify token
   - Headers: `Authorization: Bearer <token>`
-  - Response: `{ user }`
+  - Response: `{ user }` (includes user role)
 
 ## Security Notes
 
@@ -154,11 +162,50 @@ The frontend will run on `http://localhost:3000`
   name: String,
   email: String (unique),
   password: String (hashed),
+  role: String (enum: 'admin', 'normal'),
   created_at: DateTime
 }
 ```
 
 ## Development
+
+### Role-Based Access Control Implementation
+
+For each feature that should support role-based access:
+
+1. **Frontend** - Get user role from localStorage:
+```javascript
+const [user, setUser] = useState(null);
+useEffect(() => {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    setUser(JSON.parse(userData));
+  }
+}, []);
+const isAdmin = user?.role === 'admin';
+```
+
+2. **Conditionally Render** delete buttons:
+```javascript
+{isAdmin && (
+  <button className="btn-delete" onClick={() => handleDelete(id)}>
+    Delete
+  </button>
+)}
+{!isAdmin && (
+  <button className="btn-delete" disabled title="Only admins can delete">
+    Delete
+  </button>
+)}
+```
+
+3. **CSS** - Style disabled state:
+```css
+.btn-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+```
 
 ### Adding New Backend Routes
 

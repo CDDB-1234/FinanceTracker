@@ -147,4 +147,20 @@ def create_deposit_routes(deposits_collection, matured_deposits_collection=None)
         except Exception as e:
             return jsonify({'message': f'Error: {str(e)}'}), 500
     
+    @deposit_bp.route('/summary/by-holder', methods=['GET'])
+    def get_summary_by_holder():
+        """Get deposit summary grouped by account holder"""
+        try:
+            from flask import request
+            user_id = getattr(request, 'user_id', None)
+            
+            if not user_id:
+                return jsonify({'message': 'Unauthorized'}), 401
+            
+            result, status_code = deposit_service.get_deposit_summary_by_holder(user_id)
+            return jsonify(result), status_code
+            
+        except Exception as e:
+            return jsonify({'message': f'Error: {str(e)}'}), 500
+    
     return deposit_bp

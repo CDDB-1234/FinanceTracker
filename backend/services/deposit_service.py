@@ -259,22 +259,95 @@ class DepositService:
         except Exception as e:
             return {'success': False, 'message': str(e)}, 500
     
+    def get_deposit_summary_by_holder(self, user_id):
+        """Get deposit summary grouped by account holder (excluding matured)"""
+        try:
+            # Group deposits by account holder
+            pipeline = [
+                {'$match': {'user_id': ObjectId(user_id), 'account_status': {'$ne': 'Matured'}}},
+                {'$group': {
+                    '_id': {'$ifNull': ['$account_holder', 'Unknown']},
+                    'total_deposits': {'$sum': '$deposit_amount'},
+                    'total_accumulated': {'$sum': '$amount_accumulated'},
+                    'total_interest': {'$sum': '$interest_amount'},
+                    'total_maturity_amount': {'$sum': '$maturity_amount'},
+                    'count': {'$sum': 1},
+                    'account_types': {'$push': '$investment_account_type'},
+                    'banks': {'$push': '$bank'},
+                    'active_count': {'$sum': {'$cond': [{'$eq': ['$account_status', 'Active']}, 1, 0]}},
+                    'closed_count': {'$sum': {'$cond': [{'$eq': ['$account_status', 'Closed']}, 1, 0]}}
+                }},
+                {'$sort': {'total_accumulated': -1}}
+            ]
+            
+            result = list(self.deposits_collection.aggregate(pipeline))
+            
+            # Format the results
+            formatted_results = []
+            for holder_data in result:
+                account_holder = holder_data.get('_id', 'Unknown')
+                formatted_results.append({
+                    'account_holder': account_holder,
+                    'total_deposits': holder_data.get('total_deposits', 0),
+                    'total_accumulated': holder_data.get('total_accumulated', 0),
+                    'total_interest': holder_data.get('total_interest', 0),
+                    'total_maturity_amount': holder_data.get('total_maturity_amount', 0),
+                    'count': holder_data.get('count', 0),
+                    'active_count': holder_data.get('active_count', 0),
+                    'closed_count': holder_data.get('closed_count', 0),
+                    'account_types': list(set(filter(None, holder_data.get('account_types', [])))),
+                    'banks': list(set(filter(None, holder_data.get('banks', []))))
+                })
+            
+            # Calculate overall totals
+            overall_summary = {
+                'total_deposits': sum(h['total_deposits'] for h in formatted_results),
+                'total_accumulated': sum(h['total_accumulated'] for h in formatted_results),
+                'total_interest': sum(h['total_interest'] for h in formatted_results),
+                'total_maturity_amount': sum(h['total_maturity_amount'] for h in formatted_results),
+                'total_count': sum(h['count'] for h in formatted_results),
+                'total_holders': len(formatted_results)
+            }
+            
+            return {
+                'success': True,
+                'summary_by_holder': formatted_results,
+                'overall_summary': overall_summary
+            }, 200
+            
+        except Exception as e:
+            return {'success': False, 'message': str(e)}, 500
+    
     def get_all_deposits_with_filters(self, user_id, page=1, limit=10, filters=None):
-        """Get all deposits for a user with optional filters (excluding matured)"""
+        """Get all deposits for a user with optional filters (including matured if requested)"""
         try:
             skip = (page - 1) * limit
             filters = filters or {}
             
-            # Build MongoDB query - exclude matured deposits
-            query = {'user_id': ObjectId(user_id), 'account_status': {'$ne': 'Matured'}}
+            # Determine which collection to query based on account_status filter
+            status_filter = filters.get('account_status')
             
-            # Add filters if provided
+            # Query matured_deposits collection if status is 'Matured'
+            if status_filter == 'Matured':
+                if self.matured_deposits_collection is None:
+                    return {'success': True, 'deposits': [], 'total': 0, 'page': page, 'pages': 0}, 200
+                
+                # Build query for matured deposits
+                query = {'user_id': ObjectId(user_id)}
+                collection = self.matured_deposits_collection
+            else:
+                # Query active deposits collection (exclude matured)
+                query = {'user_id': ObjectId(user_id), 'account_status': {'$ne': 'Matured'}}
+                collection = self.deposits_collection
+            
+            # Add additional filters if provided
             if filters.get('investment_account_type'):
                 query['investment_account_type'] = filters['investment_account_type']
             if filters.get('bank'):
                 query['bank'] = filters['bank']
-            if filters.get('account_status'):
-                query['account_status'] = filters['account_status']
+            if status_filter and status_filter != 'Matured':
+                # Only add account_status filter for non-matured queries
+                query['account_status'] = status_filter
             if filters.get('account_holder'):
                 query['account_holder'] = filters['account_holder']
             if filters.get('start_date'):
@@ -283,13 +356,13 @@ class DepositService:
                 query['maturity_date'] = {'$lte': filters['maturity_date']}
             
             # Get filtered deposits
-            deposits = list(self.deposits_collection.find(query)
+            deposits = list(collection.find(query)
                 .sort('created_at', DESCENDING)
                 .skip(skip)
                 .limit(limit))
             
             # Count total matching deposits
-            total = self.deposits_collection.count_documents(query)
+            total = collection.count_documents(query)
             
             return {
                 'success': True,

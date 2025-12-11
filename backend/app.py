@@ -36,6 +36,7 @@ try:
     transactions_collection = db['transactions']
     deposits_collection = db['deposits']
     matured_deposits_collection = db['maturedDeposits']
+    snapshots_collection = db['snapshots']
     users_collection.create_index('email', unique=True)
     print(f"✓ Connected to MongoDB database: {DB_NAME}")
 except Exception as e:
@@ -196,7 +197,7 @@ def verify_auth():
 from routes.deposits import create_deposit_routes
 from middleware.auth_middleware import token_required as token_required_middleware
 
-# Apply token middleware to deposit routes
+# Apply token middleware to deposit and snapshot routes
 @app.before_request
 def before_request():
     """Check token for protected routes"""
@@ -204,7 +205,7 @@ def before_request():
     if request.method == 'OPTIONS':
         return jsonify({'status': 'ok'}), 200
     
-    if request.path.startswith('/api/deposits'):
+    if request.path.startswith('/api/deposits') or request.path.startswith('/api/snapshots'):
         token = request.headers.get('Authorization')
         
         if not token:
@@ -230,6 +231,11 @@ def before_request():
 
 deposit_bp = create_deposit_routes(deposits_collection, matured_deposits_collection)
 app.register_blueprint(deposit_bp)
+
+# Register snapshot routes
+from routes.snapshots import create_snapshot_routes
+snapshot_bp = create_snapshot_routes(snapshots_collection, deposits_collection)
+app.register_blueprint(snapshot_bp)
 
 # Error handlers
 @app.errorhandler(404)

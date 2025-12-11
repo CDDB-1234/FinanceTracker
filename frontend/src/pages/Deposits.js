@@ -745,13 +745,13 @@ const Deposits = () => {
                     >
                       ✎
                     </button>
-                    <button 
-                      className="btn-delete"
-                      onClick={() => handleDelete(deposit._id)}
-                      title="Delete"
-                    >
-                      🗑
-                    </button>
+                      <button 
+                        className="btn-delete"
+                        onClick={() => handleDelete(deposit._id)}
+                        title="Delete"
+                      >
+                        🗑
+                      </button>
                   </td>
                 </tr>
               ))}

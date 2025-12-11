@@ -386,8 +386,18 @@
   color: #f44336;
 }
 
-.btn-delete:hover {
+.btn-delete:hover:not(:disabled) {
   background-color: #ffebee;
+}
+
+.btn-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #ccc;
+}
+
+.btn-delete:disabled:hover {
+  background-color: transparent;
 }
 
 /* Loading & Empty State */
