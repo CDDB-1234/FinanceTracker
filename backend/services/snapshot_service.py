@@ -63,7 +63,7 @@ class SnapshotService:
                 
                 if account_type == 'SA':
                     savings += amount_accumulated
-                elif account_type == 'FD':
+                elif account_type == 'FD' or account_type == 'KVP':
                     if is_emergency_fund:
                         emergency_fund += amount_accumulated
                     else:

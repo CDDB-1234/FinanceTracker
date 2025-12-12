@@ -49,6 +49,7 @@ const Deposits = () => {
   });
 
   const [filterOptions, setFilterOptions] = useState({
+    investment_account_type: [],
     banks: [],
     accountTypes: [],
     accountStatuses: ['Active', 'Matured', 'Closed'],
@@ -68,6 +69,7 @@ const Deposits = () => {
       });
       if (response.data.success) {
         setFilterOptions({
+          investment_account_type: response.data.investment_account_types || [],
           banks: response.data.banks || [],
           accountTypes: response.data.account_types || [],
           accountStatuses: ['Active', 'Matured', 'Closed'],
@@ -367,10 +369,18 @@ const Deposits = () => {
                   onChange={handleFilterChange}
                 >
                   <option value="">All Types</option>
+                  {filterOptions.investment_account_type.length > 0 ? (
+                    filterOptions.investment_account_type.map(accountType => (
+                      <option key={accountType} value={accountType}>{accountType}</option>
+                    ))
+                  ) : (
+                    <>
                   <option value="Savings Account">Savings Account</option>
                   <option value="Current Account">Current Account</option>
                   <option value="Money Market">Money Market</option>
                   <option value="Certificate of Deposit">Certificate of Deposit</option>
+                    </>
+                  )}
                 </select>
               </div>
 
