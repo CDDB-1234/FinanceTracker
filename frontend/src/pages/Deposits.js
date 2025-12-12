@@ -111,7 +111,6 @@ const Deposits = () => {
       setDeposits(response.data.deposits || []);
       setTotalPages(response.data.pages || 1);
       setError('');
-      setPage(1);
 
     } catch (err) {
       setError('Failed to fetch deposits');
@@ -305,12 +304,21 @@ const Deposits = () => {
           </button>
           <h2>💰 Deposits Management</h2>
         </div>
-        <button 
-          className="btn-add-deposit"
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? 'Cancel' : '+ Add Deposit'}
-        </button>
+        <div className="deposits-header-right">
+          <button 
+            className="btn-view-summary"
+            onClick={() => navigate('/deposits/summary/bank-holder')}
+            title="View Bank & Holder Summary"
+          >
+            📊 Summary by Bank & Holder
+          </button>
+          <button 
+            className="btn-add-deposit"
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? 'Cancel' : '+ Add Deposit'}
+          </button>
+        </div>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}

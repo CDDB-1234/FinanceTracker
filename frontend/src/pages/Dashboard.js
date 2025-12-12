@@ -76,8 +76,19 @@ const Dashboard = () => {
       });
       const snapshots = snapshotsResponse.data.snapshots || [];
 
+      // Fetch bank & holder summary
+      let bankHolderSummary = null;
+      try {
+        const summaryResponse = await axios.get(`${API_BASE_URL}/deposits/summary/by-bank-holder`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        bankHolderSummary = summaryResponse.data;
+      } catch (err) {
+        console.log('Bank & Holder summary not available:', err.message);
+      }
+
       // Export to Excel
-      const result = await exportToExcel(deposits, snapshots, user?.name || 'User');
+      const result = await exportToExcel(deposits, snapshots, bankHolderSummary, user?.name || 'User');
       
       if (result.success) {
         setExportMessage(`✅ ${result.message}`);

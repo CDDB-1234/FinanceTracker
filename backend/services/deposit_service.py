@@ -408,3 +408,85 @@ class DepositService:
         
         return deposit
 
+    def get_deposit_summary_by_bank_and_holder(self, user_id):
+        """Get deposit summary grouped by Bank and Holder with deposit types breakdown"""
+        try:
+            # Aggregate deposits by bank, holder and investment account type
+            pipeline = [
+                {'$match': {'user_id': ObjectId(user_id), 'account_status': {'$ne': 'Matured'}}},
+                {'$group': {
+                    '_id': {
+                        'bank': {'$ifNull': ['$bank', 'Unknown']},
+                        'account_holder': {'$ifNull': ['$account_holder', 'Unknown']},
+                        'investment_account_type': {'$ifNull': ['$investment_account_type', 'Other']}
+                    },
+                    'total_deposit_amount': {'$sum': '$deposit_amount'},
+                    'total_accumulated': {'$sum': '$amount_accumulated'},
+                    'total_interest': {'$sum': '$interest_amount'},
+                    'total_maturity_amount': {'$sum': '$maturity_amount'},
+                    'count': {'$sum': 1}
+                }},
+                {'$sort': {
+                    '_id.bank': 1,
+                    '_id.account_holder': 1,
+                    '_id.investment_account_type': 1
+                }}
+            ]
+            
+            result = list(self.deposits_collection.aggregate(pipeline))
+            
+            # Structure data for display: Bank -> Holder -> AccountTypes
+            bank_summary = {}
+            
+            for item in result:
+                bank = item['_id']['bank']
+                holder = item['_id']['account_holder']
+                investment_type = item['_id']['investment_account_type']
+                amount = item['total_accumulated']
+                
+                if bank not in bank_summary:
+                    bank_summary[bank] = {}
+                
+                if holder not in bank_summary[bank]:
+                    bank_summary[bank][holder] = {
+                        'Recurring Deposit': 0,
+                        'Fixed Deposits': 0,
+                        'PPF': 0,
+                        'Savings': 0,
+                        'total_amount': 0
+                    }
+                
+                # Normalize investment type string for comparison
+                inv_type_lower = investment_type.lower().strip() if investment_type else ''
+                
+                # Map investment account types to display categories
+                if 'recurring' in inv_type_lower or 'rd' in inv_type_lower:
+                    bank_summary[bank][holder]['Recurring Deposit'] += amount
+                elif 'fixed' in inv_type_lower or 'fd' in inv_type_lower:
+                    bank_summary[bank][holder]['Fixed Deposits'] += amount
+                elif 'ppf' in inv_type_lower:
+                    bank_summary[bank][holder]['PPF'] += amount
+                elif 'savings' in inv_type_lower or 'saving' in inv_type_lower:
+                    bank_summary[bank][holder]['Savings'] += amount
+                else:
+                    # For any other types, add to the appropriate category based on name
+                    bank_summary[bank][holder]['Savings'] += amount
+                
+                bank_summary[bank][holder]['total_amount'] += amount
+            
+            # Calculate grand totals
+            grand_total = sum(
+                holder_data['total_amount']
+                for bank_data in bank_summary.values()
+                for holder_data in bank_data.values()
+            )
+            
+            return {
+                'success': True,
+                'summary': bank_summary,
+                'grand_total': grand_total
+            }, 200
+            
+        except Exception as e:
+            return {'success': False, 'message': str(e)}, 500
+

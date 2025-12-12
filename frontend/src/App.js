@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import Deposits from './pages/Deposits';
 import Snapshots from './pages/Snapshots';
+import DepositSummaryByBank from './pages/DepositSummaryByBank';
 import './App.css';
 
 function App() {
@@ -24,6 +25,10 @@ function App() {
         <Route 
           path="/snapshots" 
           element={isAuthenticated ? <Snapshots /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/deposits/summary/bank-holder" 
+          element={isAuthenticated ? <DepositSummaryByBank /> : <Navigate to="/login" />} 
         />
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
       </Routes>

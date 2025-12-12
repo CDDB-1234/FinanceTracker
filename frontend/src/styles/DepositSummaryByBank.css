@@ -1,0 +1,285 @@
+.deposit-summary-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  background: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.summary-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.btn-back {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background: #764ba2;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.summary-content {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 30px;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.summary-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.summary-table th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid #e0e0e0;
+  white-space: nowrap;
+}
+
+.summary-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+.summary-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.summary-table td {
+  padding: 14px 12px;
+  border: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.summary-table .bank-name {
+  font-weight: 600;
+  color: #667eea;
+  background: #f9f9f9;
+}
+
+.summary-table .holder-name {
+  font-weight: 500;
+  color: #555;
+}
+
+.summary-table .amount {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  color: #333;
+}
+
+.summary-table .total-amount {
+  text-align: right;
+  font-weight: 600;
+  color: #667eea;
+  font-family: 'Courier New', monospace;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.summary-table .bank-subtotal {
+  background: rgba(102, 126, 234, 0.08);
+  font-weight: 600;
+  border-top: 2px solid #667eea;
+}
+
+.summary-table .subtotal-label {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.summary-table tfoot {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.summary-table .grand-total-row {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+  font-weight: 700;
+  border-top: 3px solid #667eea;
+  border-bottom: 3px solid #667eea;
+}
+
+.summary-table .grand-total-label {
+  color: #333;
+  font-size: 15px;
+}
+
+.summary-table .grand-total-amount {
+  text-align: right;
+  color: #667eea;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.summary-card h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.summary-card .amount-large {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+.error {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .summary-table {
+    font-size: 13px;
+  }
+
+  .summary-table th,
+  .summary-table td {
+    padding: 12px 8px;
+  }
+
+  .summary-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .summary-header h1 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .deposit-summary-container {
+    padding: 15px;
+  }
+
+  .summary-content {
+    padding: 20px;
+  }
+
+  .summary-table {
+    font-size: 12px;
+  }
+
+  .summary-table th,
+  .summary-table td {
+    padding: 10px 6px;
+  }
+
+  .summary-header h1 {
+    font-size: 20px;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    padding: 20px;
+  }
+
+  .summary-card .amount-large {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-table {
+    font-size: 11px;
+  }
+
+  .summary-table th,
+  .summary-table td {
+    padding: 8px 4px;
+  }
+
+  .summary-header h1 {
+    font-size: 18px;
+  }
+
+  .summary-card h3 {
+    font-size: 14px;
+  }
+
+  .summary-card .amount-large {
+    font-size: 20px;
+  }
+}

@@ -163,4 +163,55 @@ def create_deposit_routes(deposits_collection, matured_deposits_collection=None)
         except Exception as e:
             return jsonify({'message': f'Error: {str(e)}'}), 500
     
+    @deposit_bp.route('/summary/by-bank-holder', methods=['GET'])
+    def get_summary_by_bank_holder():
+        """Get deposit summary grouped by bank and account holder with deposit type breakdown"""
+        try:
+            from flask import request
+            user_id = getattr(request, 'user_id', None)
+            
+            if not user_id:
+                return jsonify({'message': 'Unauthorized'}), 401
+            
+            result, status_code = deposit_service.get_deposit_summary_by_bank_and_holder(user_id)
+            return jsonify(result), status_code
+            
+        except Exception as e:
+            return jsonify({'message': f'Error: {str(e)}'}), 500
+    
+    @deposit_bp.route('/debug/deposit-types', methods=['GET'])
+    def get_deposit_types_debug():
+        """Debug endpoint to see what deposit types and investment types exist in database"""
+        try:
+            from flask import request
+            from bson import ObjectId
+            user_id = getattr(request, 'user_id', None)
+            
+            if not user_id:
+                return jsonify({'message': 'Unauthorized'}), 401
+            
+            # Get all unique deposit_type values
+            deposit_types = deposits_collection.distinct('deposit_type', {'user_id': ObjectId(user_id)})
+            investment_types = deposits_collection.distinct('investment_account_type', {'user_id': ObjectId(user_id)})
+            
+            # Get sample deposits to see data structure
+            samples = list(deposits_collection.find(
+                {'user_id': ObjectId(user_id)}, 
+                {'deposit_type': 1, 'investment_account_type': 1, 'bank': 1, 'account_holder': 1, 'deposit_amount': 1}
+            ).limit(5))
+            
+            # Format samples for JSON
+            for sample in samples:
+                sample['_id'] = str(sample['_id'])
+                sample['user_id'] = str(sample['user_id'])
+            
+            return jsonify({
+                'deposit_types': deposit_types,
+                'investment_account_types': investment_types,
+                'sample_deposits': samples
+            }), 200
+            
+        except Exception as e:
+            return jsonify({'message': f'Error: {str(e)}'}), 500
+    
     return deposit_bp

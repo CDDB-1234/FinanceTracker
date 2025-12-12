@@ -3,9 +3,9 @@
  */
 
 /**
- * Generate Excel file with deposits and snapshots
+ * Generate Excel file with deposits, snapshots, and bank/holder summary
  */
-export const exportToExcel = async (deposits, snapshots, userName) => {
+export const exportToExcel = async (deposits, snapshots, bankHolderSummary, userName) => {
   try {
     // Dynamically import xlsx library
     const XLSX = await import('xlsx');
@@ -56,6 +56,96 @@ export const exportToExcel = async (deposits, snapshots, userName) => {
       { wch: 15 }  // Created By
     ];
     XLSX.utils.book_append_sheet(workbook, depositsWorksheet, 'Deposits');
+
+    // Prepare Bank & Holder Summary Sheet
+    if (bankHolderSummary && bankHolderSummary.summary) {
+      const summaryData = [];
+      let grandTotal = 0;
+
+      // Add title row
+      summaryData.push({
+        'Bank': 'BANK & HOLDER SUMMARY',
+        'Recurring Deposit': '',
+        'Fixed Deposits': '',
+        'PPF': '',
+        'Savings': '',
+        'Account Holder': '',
+        'Total': ''
+      });
+
+      // Add data rows
+      Object.entries(bankHolderSummary.summary).forEach(([bank, holders]) => {
+        let bankTotal = 0;
+        let bankRecurring = 0;
+        let bankFixed = 0;
+        let bankPPF = 0;
+        let bankSavings = 0;
+
+        Object.entries(holders).forEach(([holder, data]) => {
+          summaryData.push({
+            'Bank': bank,
+            'Recurring Deposit': `₹${formatCurrencyForExcel(data['Recurring Deposit'])}`,
+            'Fixed Deposits': `₹${formatCurrencyForExcel(data['Fixed Deposits'])}`,
+            'PPF': `₹${formatCurrencyForExcel(data['PPF'])}`,
+            'Savings': `₹${formatCurrencyForExcel(data['Savings'])}`,
+            'Account Holder': holder,
+            'Total': `₹${formatCurrencyForExcel(data['total_amount'])}`
+          });
+
+          bankTotal += data['total_amount'];
+          bankRecurring += data['Recurring Deposit'];
+          bankFixed += data['Fixed Deposits'];
+          bankPPF += data['PPF'];
+          bankSavings += data['Savings'];
+          grandTotal += data['total_amount'];
+        });
+
+        // Add bank subtotal row
+        summaryData.push({
+          'Bank': `Subtotal (${bank})`,
+          'Recurring Deposit': `₹${formatCurrencyForExcel(bankRecurring)}`,
+          'Fixed Deposits': `₹${formatCurrencyForExcel(bankFixed)}`,
+          'PPF': `₹${formatCurrencyForExcel(bankPPF)}`,
+          'Savings': `₹${formatCurrencyForExcel(bankSavings)}`,
+          'Account Holder': '',
+          'Total': `₹${formatCurrencyForExcel(bankTotal)}`
+        });
+
+        // Add empty row for separation
+        summaryData.push({
+          'Bank': '',
+          'Recurring Deposit': '',
+          'Fixed Deposits': '',
+          'PPF': '',
+          'Savings': '',
+          'Account Holder': '',
+          'Total': ''
+        });
+      });
+
+      // Add grand total row
+      summaryData.push({
+        'Bank': 'GRAND TOTAL',
+        'Recurring Deposit': '',
+        'Fixed Deposits': '',
+        'PPF': '',
+        'Savings': '',
+        'Account Holder': '',
+        'Total': `₹${formatCurrencyForExcel(grandTotal)}`
+      });
+
+      const summaryWorksheet = XLSX.utils.json_to_sheet(summaryData);
+      summaryWorksheet['!cols'] = [
+        { wch: 20 }, // Bank
+        { wch: 18 }, // Recurring Deposit
+        { wch: 18 }, // Fixed Deposits
+        { wch: 12 }, // PPF
+        { wch: 12 }, // Savings
+        { wch: 18 }, // Account Holder
+        { wch: 18 }  // Total
+      ];
+      XLSX.utils.book_append_sheet(workbook, summaryWorksheet, 'Bank & Holder Summary');
+    }
 
     // Prepare Snapshots Sheet
     const snapshotsData = snapshots.map(snapshot => ({
