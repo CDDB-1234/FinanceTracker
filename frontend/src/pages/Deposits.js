@@ -36,7 +36,8 @@ const Deposits = () => {
     account_status: 'Active',
     comments: '',
     plan_on_maturity: '',
-    deposit_type: ''
+    deposit_type: '',
+    deposit_goal: ''
   });
 
   const [filters, setFilters] = useState({
@@ -260,7 +261,8 @@ const Deposits = () => {
       account_status: 'Active',
       comments: '',
       plan_on_maturity: '',
-      deposit_type: ''
+      deposit_type: '',
+      deposit_goal: ''
     });
     setEditingId(null);
     setShowForm(false);
@@ -307,6 +309,13 @@ const Deposits = () => {
           <h2>💰 Deposits Management</h2>
         </div>
         <div className="deposits-header-right">
+          <button 
+            className="btn-view-type-summary"
+            onClick={() => navigate('/deposits/summary/type')}
+            title="View Deposit Type Summary"
+          >
+            📑 Type Summary
+          </button>
           <button 
             className="btn-view-summary"
             onClick={() => navigate('/deposits/summary/bank-holder')}
@@ -375,10 +384,13 @@ const Deposits = () => {
                     ))
                   ) : (
                     <>
-                  <option value="Savings Account">Savings Account</option>
-                  <option value="Current Account">Current Account</option>
-                  <option value="Money Market">Money Market</option>
-                  <option value="Certificate of Deposit">Certificate of Deposit</option>
+                  <option value="FD">Fixed Deposit</option>
+                  <option value="RD">Recurring Deposit</option>
+                  <option value="SA">Savings Account</option>
+				          <option value="PPF">PPF</option>
+				          <option value="NPS">NPS</option>
+				          <option value="EPF">EPF</option>
+				          <option value="KVP">Kisan Vikas Patra</option>
                     </>
                   )}
                 </select>
@@ -398,11 +410,13 @@ const Deposits = () => {
                     ))
                   ) : (
                     <>
-                      <option value="HDFC Bank">HDFC Bank</option>
-                      <option value="ICICI Bank">ICICI Bank</option>
-                      <option value="SBI">SBI</option>
-                      <option value="Axis Bank">Axis Bank</option>
-                      <option value="Kotak Mahindra">Kotak Mahindra</option>
+                      <option value="HDFC">HDFC</option>
+                  <option value="AXIS">AXIS</option>
+                  <option value="KOTAK">KOTAK</option>
+				  <option value="SBI">SBI</option>
+				  <option value="UBI">UBI</option>
+				  <option value="PO">PostOffice</option>
+                  <option value="GOVT">GOVT</option>
                     </>
                   )}
                 </select>
@@ -519,6 +533,7 @@ const Deposits = () => {
 				  <option value="SBI">SBI</option>
 				  <option value="UBI">UBI</option>
 				  <option value="PO">PostOffice</option>
+                  <option value="GOVT">GOVT</option>
                 </select>
               </div>
 
@@ -557,6 +572,24 @@ const Deposits = () => {
                   <option value="">Select Type</option>
                   <option value="long">Long Term</option>
                   <option value="short">Short Term</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Deposit Goal</label>
+                <select
+                  name="deposit_goal"
+                  value={formData.deposit_goal}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Goal</option>
+                  <option value="Retirement">Retirement</option>
+                  <option value="Education">Education</option>
+                  <option value="Savings">Savings</option>
+                  <option value="EmergencyFund">EmergencyFund</option>
+                  <option value="InsurancePremium">InsurancePremium</option>
+                  <option value="DeptToPPF">DeptToPPF</option>
+                  <option value="BuyLand">BuyLand</option>
                 </select>
               </div>
 
@@ -724,13 +757,13 @@ const Deposits = () => {
               <tr>
                 <th>Bank</th>
                 <th>Account Holder</th>
+                <th>Account Number</th>
+                <th>Account Type</th>
                 <th>Deposit Amount</th>
                 <th>Interest Rate</th>
                 <th>Start Date</th>
                 <th>Maturity Date</th>
                 <th>Status</th>
-                <th>Created By</th>
-                <th>Updated By</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -744,6 +777,8 @@ const Deposits = () => {
                 >
                   <td>{deposit.bank}</td>
                   <td>{deposit.account_holder}</td>
+                  <td>{deposit.account_number}</td>
+                  <td>{deposit.investment_account_type}</td>
                   <td>{formatCurrency(deposit.deposit_amount)}</td>
                   <td>{deposit.interest_rate}%</td>
                   <td>{formatDate(deposit.start_date)}</td>
@@ -753,8 +788,6 @@ const Deposits = () => {
                       {deposit.account_status}
                     </span>
                   </td>
-                  <td>{deposit.createdBy || 'System'}</td>
-                  <td>{deposit.updatedBy || 'System'}</td>
                   <td className="actions" onClick={(e) => e.stopPropagation()}>
                     <button 
                       className="btn-edit"

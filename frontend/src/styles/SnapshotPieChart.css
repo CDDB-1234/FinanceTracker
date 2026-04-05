@@ -1,0 +1,49 @@
+/* Pie Chart Styles */
+.pie-chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.pie-chart-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pie-chart-wrapper canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.no-data {
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Responsive design for pie chart */
+@media (max-width: 768px) {
+  .pie-chart-container {
+    padding: 15px;
+  }
+
+  .pie-chart-wrapper {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pie-chart-wrapper {
+    max-width: 250px;
+  }
+}

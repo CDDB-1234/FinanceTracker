@@ -81,6 +81,106 @@
   box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
 }
 
+/* Type Summary button (placed near summary controls) */
+.btn-view-type-summary {
+  background: linear-gradient(90deg, #00b4db 0%, #0083b0 100%);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-view-type-summary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 131, 176, 0.32);
+}
+
+/* Goal section header and toggle */
+.goal-header {
+  align-items: center;
+}
+
+.btn-toggle {
+  background: none;
+  border: 1px solid #e0e0e0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  color: #333;
+}
+
+.btn-toggle:hover {
+  background: #f5f7fb;
+  border-color: #cfd8ff;
+  transform: translateY(-1px);
+}
+
+.goal-header .card {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Small adjustments for goal card inside summary */
+.goal-header .card-label {
+  font-size: 11px;
+}
+.goal-header .card-value {
+  font-size: 18px;
+}
+
+/* Goal section wrapper to match deposits table appearance */
+.goal-section {
+  padding: 12px 16px;
+}
+
+.goal-section .deposits-table {
+  margin-top: 6px;
+}
+
+/* Make goal header card expand to match table width */
+.goal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.goal-header .btn-toggle {
+  flex: 0 0 auto;
+}
+
+.goal-header .card {
+  flex: 1 1 auto;
+  margin: 0; /* remove extra card margins */
+}
+
+.goal-section .card {
+  width: 100%;
+}
+
+/* Make the card clickable and indicate action */
+.goal-header .card {
+  cursor: pointer;
+}
+
+.goal-header .card:hover {
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.08);
+  transform: translateY(-2px);
+}
+
 .btn-add-deposit {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;

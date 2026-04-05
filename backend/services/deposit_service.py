@@ -32,6 +32,7 @@ class DepositService:
                 'comments': deposit_data.get('comments', ''),
                 'plan_on_maturity': deposit_data.get('plan_on_maturity'),
                 'deposit_type': deposit_data.get('deposit_type'),
+                'deposit_goal': deposit_data.get('deposit_goal'),
                 'created_at': datetime.utcnow(),
                 'createdBy': user_name or 'System',
                 'updated_at': datetime.utcnow(),
@@ -164,6 +165,7 @@ class DepositService:
                 'comments': update_data.get('comments'),
                 'plan_on_maturity': update_data.get('plan_on_maturity'),
                 'deposit_type': update_data.get('deposit_type'),
+                'deposit_goal': update_data.get('deposit_goal'),
                 'updated_at': datetime.utcnow(),
                 'updatedBy': user_name or 'System'
             }
@@ -385,11 +387,23 @@ class DepositService:
             account_types = self.deposits_collection.distinct('investment_account_type', query)
             account_holders = self.deposits_collection.distinct('account_holder', query)
             
+            # Get deposit_goal distinct values as well
+            deposit_goals = self.deposits_collection.distinct('deposit_goal', query)
+
+            # Ensure 'GOVT' appears in bank filter options even if not present in DB
+            bank_set = set(filter(None, banks))
+            bank_set.add('GOVT')
+
+            # Ensure 'Savings' is present in deposit goals
+            deposit_goal_set = set(filter(None, deposit_goals))
+            deposit_goal_set.add('Savings')
+
             return {
                 'success': True,
-                'banks': sorted(filter(None, banks)),
+                'banks': sorted(bank_set),
                 'account_types': sorted(filter(None, account_types)),
-                'account_holders': sorted(filter(None, account_holders))
+                'account_holders': sorted(filter(None, account_holders)),
+                'deposit_goals': sorted(deposit_goal_set)
             }, 200
             
         except Exception as e:

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import snapshotApi from '../api/snapshotApi';
+import SnapshotPieChart from '../components/SnapshotPieChart';
 import '../styles/Snapshots.css';
+import '../styles/SnapshotPieChart.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -279,6 +281,7 @@ const Snapshots = () => {
             </div>
 
             <div className="modal-body">
+              <SnapshotPieChart snapshot={selectedSnapshot} />
               <div className="snapshot-details-grid">
                 <div className="detail-item">
                   <span className="detail-label">Created</span>

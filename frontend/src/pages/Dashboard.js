@@ -202,10 +202,7 @@ const Dashboard = () => {
                           <tr>
                             <th className="card-label">Account Holder</th>
                             <th className="card-label">Deposits</th>
-                            <th className="card-label">Total Invested</th>
                             <th className="card-label">Amount Accumulated</th>
-                            <th className="card-label">Interest Earned</th>
-                            <th className="card-label">Maturity Amount</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -217,11 +214,7 @@ const Dashboard = () => {
                               <td className="card-value">
                                 <span className="badge-count">{holder.count}</span>
                               </td>
-                              <td className="card-value">{formatCurrency(holder.total_deposits)}</td>
-                              <td className="card-value">{formatCurrency(holder.total_accumulated)}</td>
-                              <td className="card-value">{formatCurrency(holder.total_interest)}</td>
-                              <td className="card-value">{formatCurrency(holder.total_maturity_amount)}</td>
-                              
+                             <td className="card-value">{formatCurrency(holder.total_accumulated)}</td>  
                             </tr>
                           ))}
                         </tbody>
